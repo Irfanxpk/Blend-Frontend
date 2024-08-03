@@ -22,4 +22,13 @@ const GET_USERS = gql`
   }
 `;
 
-export { GET_ADMIN, GET_USERS }
+const BLOCK_UNBLOCK_USER = gql`
+  mutation BlockUnblockUser($id: ID!) {
+    BlockUnblockUser(id: $id) {
+      message
+      success
+    }
+  }
+`;
+
+export { BLOCK_UNBLOCK_USER, GET_ADMIN, GET_USERS };

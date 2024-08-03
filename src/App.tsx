@@ -11,7 +11,8 @@ import AdminDash from "./pages/Admin/AdminDash";
 import { ProtectedAdminRoute } from "./routes/protectedRoutes/ProtectedAdminRoute";
 import AdminLogin from "./pages/Admin/AdminLogin";
 import UserManagement from "./pages/Admin/UserManagement";
-import ForgotPassword from "./pages/Login-signup/ForgotPassword";
+import ResetPassword from "./pages/Login-signup/ResetPassword";
+import CheckValidity from "./components/client/Auth/CheckValidity";
 
 
 const client = new ApolloClient({
@@ -30,19 +31,24 @@ function App() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="/forgotPassword" element={<ForgotPassword />} />
+            <Route element={<CheckValidity />}>
+              <Route
+                path="/reset-password/:token"
+                element={<ResetPassword />}
+              />
+            </Route>
             {/* <Route element={<ProtectedAdminRoute />}> */}
-              <Route element={<AdminDash />}>
+            <Route element={<AdminDash />}>
               <Route path="/admin" element={<UserManagement />} />
-                {/* <Route path="/admin/*" element={<AdminLogin />} /> */}
-                </Route>
+              {/* <Route path="/admin/*" element={<AdminLogin />} /> */}
+            </Route>
             {/* </Route> */}
-              <Route path="/adminLogin" element={<AdminLogin />} />
-              <Route path="/home" element={<HomePage />} />
+            <Route path="/adminLogin" element={<AdminLogin />} />
+            <Route path="/home" element={<HomePage />} />
             <Route path="/user/:id" element={<UserPage />} />
             <Route path="/community/:id" element={<CommunityPage />} />
             <Route path="/post/:id" element={<PostPage />} />
-            <Route path="*" element={<LandingPage />} />
+            {/* <Route path="*" element={<LandingPage />} /> */}
           </Routes>
         </div>
       </Router>

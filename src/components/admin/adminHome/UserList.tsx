@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useQuery, gql } from "@apollo/client";
+import { useQuery, gql, useMutation } from "@apollo/client";
 import { gsap } from "gsap";
 import { toast } from "sonner";
+import { BLOCK_UNBLOCK_USER } from "../../../graphql/mutations/adminMutation/AdminGql";
 
 const GET_USERS = gql`
   query GetUsers {
@@ -21,9 +22,11 @@ export function UserList() {
   const { loading, error, data } = useQuery(GET_USERS);
   const [currentPage, setCurrentPage] = useState(1);
   const [paginatedUsers, setPaginatedUsers] = useState([]);
+  const [BlockUnblockUser] = useMutation(BLOCK_UNBLOCK_USER);
 
   useEffect(() => {
     if (data) {
+      console.log(data);
       const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
       const endIndex = startIndex + ITEMS_PER_PAGE;
       setPaginatedUsers(data.users.slice(startIndex, endIndex));
@@ -52,9 +55,43 @@ export function UserList() {
     }
   };
 
+  const handleBlockUser = async (userId: string, isBlocked: boolean) => {
+    try {
+      await BlockUnblockUser({
+        variables: { id: userId },
+        update: (cache, { data }) => {
+          const updatedUsers = data?.BlockUnblockUser
+            ? data.BlockUnblockUser
+            : {};
+          const usersInCache = cache.readQuery({ query: GET_USERS });
+
+          if (usersInCache) {
+            const updatedUserList = usersInCache.users.map((user) =>
+              user.id === userId ? { ...user, IsBlocked: !isBlocked } : user
+            );
+
+            cache.writeQuery({
+              query: GET_USERS,
+              data: { users: updatedUserList },
+            });
+          }
+        },
+        onError: (error) => {
+          toast.error(error.message);
+        },
+      });
+
+      toast.success(
+        isBlocked ? "User unblocked successfully" : "User blocked successfully",
+      );
+    } catch (error) {
+      toast.error("An error occurred while updating user status.");
+    }
+  };
+
   return (
     <div className=" ">
-      <div className="overflow-auto h-[600px]  rounded-lg p-4">
+      <div className="overflow-auto h-[600px] rounded-lg p-4">
         <ul className="space-y-4">
           {paginatedUsers.map((user) => (
             <li
@@ -78,11 +115,16 @@ export function UserList() {
                     {user.IsBlocked ? "Blocked" : "Active"}
                   </p>
                 </div>
-                {/* Future buttons for block, message, etc. */}
                 <div className="flex space-x-2">
-                  {/* Button placeholders */}
-                  {/* <button className="bg-blue-500 text-white px-4 py-2 rounded">Block</button>
-                  <button className="bg-green-500 text-white px-4 py-2 rounded">Message</button> */}
+                  <button
+                    onClick={() => handleBlockUser(user.id, user.IsBlocked)}
+                    className={`${user.IsBlocked ? "bg-red-500" : "bg-blue-500"} text-white px-4 py-2 rounded`}
+                  >
+                    {user.IsBlocked ? "Unblock" : "Block"}
+                  </button>
+                  <button className="bg-green-500 text-white px-4 py-2 rounded">
+                    Message
+                  </button>
                 </div>
               </div>
             </li>

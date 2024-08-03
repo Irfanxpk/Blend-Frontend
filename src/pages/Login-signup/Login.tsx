@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { LOGIN_USER } from "../../graphql/mutations/userMutation/UserGql";
+import { FORGET_PASSWORD, LOGIN_USER } from "../../graphql/mutations/userMutation/UserGql";
 import { useMutation } from "@apollo/client";
 import { toast } from "sonner";
 import { DrawerDraggable } from "../../components/Common/DrawerDraggable";
@@ -9,7 +9,8 @@ import { DrawerDraggable } from "../../components/Common/DrawerDraggable";
 const Login = () => {
  
 const [loginuser,{data, loading , error}] = useMutation(LOGIN_USER)
-
+const [ForgetPassword] = useMutation(FORGET_PASSWORD);
+  
   const Navigate = useNavigate();
   const [email, setEmail] = useState(
     sessionStorage.getItem("email_ref") || ""
@@ -41,12 +42,25 @@ const [loginuser,{data, loading , error}] = useMutation(LOGIN_USER)
   }
 
   // to handle the forget password
-  const handleforgetPassword = (e: React.FormEvent) => {
+  const handleforgetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if(!email)toast.error("Please enter email",{
+    if(!email) return toast.error("Email is required",{
       position: "top-center",
     });
     
+    const res =await ForgetPassword({ variables: { email } })
+    console.log(res.data);
+   
+    if (res.data.forgetPassword.success) {
+      
+      toast.info("Please check your email for password reset link", { position: "top-center", });
+      return;
+    }
+
+    toast.error(res.data.forgetPassword.message, {
+      position: "top-center",
+    });
+
     // Navigate("/forgot-password");
   };
 

@@ -56,7 +56,45 @@ const GOOGLE_LOGIN = gql`
   }
 `;
 
-export { CREATE_USER, VALIDATE_OTP, LOGIN_USER , GOOGLE_LOGIN};
+const FORGET_PASSWORD = gql`
+  mutation forgetPassword($email: String!) {
+    forgetPassword(email: $email){
+    success
+    message
+  }}
+`;
+
+const CHECK_TOKEN = gql`
+  query CheckToken($token: String!) {
+    checkToken(token: $token) {
+    
+        message
+        success
+        req_id
+    }
+  }
+`;
+
+const RESET_PASSWORD = gql`
+  mutation ResetPassword($token: String!, $password: String!) {
+    resetPassword(token: $token, password: $password) {
+      message
+      success
+    }
+  }
+`;
+
+
+
+export {
+  CREATE_USER,
+  VALIDATE_OTP,
+  LOGIN_USER,
+  GOOGLE_LOGIN,
+  FORGET_PASSWORD,
+  CHECK_TOKEN,
+  RESET_PASSWORD,
+};
 
 
 // username: "irfan", email: "test@gmail.com", password: "12345678" 

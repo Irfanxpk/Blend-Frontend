@@ -26,6 +26,9 @@ module.exports = {
   content: ["./src/**/*.{ts,tsx}", flowbite.content(),],
   darkMode: "media",
   theme: {
+    extend: {fontFamily: {
+      BeadyReady: ["Beady Ready", "sans-serif"],
+    }},
     // rest of the code
   },
   plugins: [

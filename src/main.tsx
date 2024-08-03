@@ -15,7 +15,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <GoogleOAuthProvider clientId={`${GOOGLE_CLIENT_ID}`}>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <Toaster richColors={true} />
+          <Toaster richColors={true}  />
           <App />
         </PersistGate>
       </Provider>
